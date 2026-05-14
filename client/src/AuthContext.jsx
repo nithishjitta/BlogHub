@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
 const AuthContext = createContext(null);
-const API = "http://localhost:3100";
+const API = import.meta.env.VITE_API_URL;
 
 // Send cookies with every request
 axios.defaults.withCredentials = true;
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginWithGoogle = () => {
-    window.open("http://localhost:3100/auth/google", "_self");
+    window.open(`${API}/auth/google`, "_self");
   };
 
   const logout = async () => {

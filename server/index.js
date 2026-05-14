@@ -12,7 +12,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./model/auth");
 
 app.use(cors({
-    origin: 'http://localhost:5173', // your frontend URL
+    origin: process.env.FRONTEND_URL, // your frontend URL
     credentials: true,
 }));
 app.use(express.json());
@@ -36,7 +36,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3100/auth/google/callback",
+      callbackURL: `${process.env.API_URL}/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
