@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useTheme } from '../ThemeContext';
 import { CreateBlogForm } from './CreateBlogForm';
-import { X, LogOut, Sun, Moon, LayoutGrid, BookOpen } from 'lucide-react';
+import { X, LogOut, Sun, Moon, LayoutGrid, BookOpen, ArrowLeft } from 'lucide-react';
 
 export const Layout = () => {
   const { user, logout } = useAuth();
@@ -23,17 +23,36 @@ export const Layout = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', transition: 'background 0.25s' }}>
+    <div
+  style={{
+    minHeight: '100vh',
+    background: 'var(--bg)',
+    transition: 'background 0.25s',
+    display: 'flex',
+    flexDirection: 'column',
+  }}
+>
 
       {/* ─── NAVBAR ─── */}
       <header className="masthead">
         <div className="masthead-bar">
 
-          {/* Logo */}
-          <div className="site-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            Blog<span className="site-logo-dot">.</span>Hub
-            <small className="site-logo-sub">Finance · Career · Tech</small>
-          </div>
+          {/* Back button in navbar — only on detail pages */}
+          {isDetail ? (
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={() => navigate('/')}
+              style={{ flexShrink: 0 }}
+            >
+              <ArrowLeft size={13} /> Back
+            </button>
+          ) : (
+            /* Logo — only when not on detail page */
+            <div className="site-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+              Blog<span className="site-logo-dot">.</span>Hub
+              <small className="site-logo-sub">Finance · Career · Tech</small>
+            </div>
+          )}
 
           <div className="nav-sep" />
 
@@ -67,7 +86,6 @@ export const Layout = () => {
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
-                  // Navigate to home if searching from detail page
                   if (isDetail) navigate('/');
                 }}
               />
@@ -100,8 +118,10 @@ export const Layout = () => {
         </div>
       </header>
 
-      {/* ─── PAGE CONTENT (from nested routes) ─── */}
-      <Outlet context={{ searchQuery, setSearchQuery }} />
+      {/* ─── PAGE CONTENT ─── */}
+      <div style={{ flex: 1 }}>
+  <Outlet context={{ searchQuery, setSearchQuery }} />
+</div>
 
       {/* ─── FOOTER — hide on detail pages ─── */}
       {!isDetail && (

@@ -4,20 +4,22 @@ const API_BASE_URL = 'http://localhost:3100';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
 
 export const blogApi = {
-
   getAllBlogs: async () => {
-    const response = await api.get("/blogs");
+    const response = await api.get('/blogs');
     return response.data;
   },
 
   getBlogById: async (id) => {
     const response = await api.get(`/blogs/${id}`);
+    return response.data;
+  },
+
+  getBlogsByUser: async (email) => {
+    const response = await api.get(`/blogs/user/${email}`);
     return response.data;
   },
 

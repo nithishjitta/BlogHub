@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useBlogs } from '../hooks/useBlogs';
+import { useMyBlogs } from '../hooks/useBlogs'; // ← dedicated hook
 import { useAuth } from '../AuthContext';
-import { Calendar, Clock, FileText, TrendingUp, PenLine, Trash2, Eye } from 'lucide-react';
+import { Calendar, Clock, FileText, TrendingUp, PenLine, Eye } from 'lucide-react';
 
 const fmt = (d) =>
   new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -11,17 +11,9 @@ const readTime = (content) =>
 
 export const MyBlogs = ({ onOpen }) => {
   const { user } = useAuth();
-  const { data: blogs, isLoading } = useBlogs();
+  const { data: myBlogs = [], isLoading } = useMyBlogs(user?.email); // ← fetch by email
   const [filter, setFilter] = useState('all');
 
-  // Filter blogs created by current user (matched by author field or all if no author field)
-  const myBlogs = blogs?.filter((b) =>
-    b.author
-      ? b.author.toLowerCase() === user?.name?.toLowerCase()
-      : false
-  ) || [];
-
-  // All categories from user's blogs
   const allCats = [...new Set(myBlogs.flatMap((b) => b.category || []))];
 
   const filtered = filter === 'all'
@@ -39,8 +31,6 @@ export const MyBlogs = ({ onOpen }) => {
 
   return (
     <div className="myblogs-root">
-
-      {/* ── Header ── */}
       <div className="myblogs-header">
         <div className="myblogs-header-left">
           <div className="hero-eyebrow" style={{ marginBottom: '0.6rem' }}>
@@ -48,12 +38,9 @@ export const MyBlogs = ({ onOpen }) => {
             <span className="hero-eyebrow-text">My Articles</span>
           </div>
           <h2 className="myblogs-title">Your Published Work</h2>
-          <p className="myblogs-sub">
-            Articles you've contributed to the BlogHub community.
-          </p>
+          <p className="myblogs-sub">Articles you've contributed to the BlogHub community.</p>
         </div>
 
-        {/* Stats row */}
         <div className="myblogs-stats">
           <div className="myblogs-stat">
             <div className="myblogs-stat-icon" style={{ background: 'var(--blue-light)', color: 'var(--blue)' }}>
@@ -87,41 +74,29 @@ export const MyBlogs = ({ onOpen }) => {
         </div>
       </div>
 
-      {/* ── Empty state ── */}
       {myBlogs.length === 0 && (
         <div className="myblogs-empty">
-          <div className="myblogs-empty-icon">
-            <PenLine size={32} />
-          </div>
+          <div className="myblogs-empty-icon"><PenLine size={32} /></div>
           <h3 className="myblogs-empty-title">No articles yet</h3>
           <p className="myblogs-empty-sub">
-            You haven't published any articles. Share your expertise with the BlogHub community.
+            You haven't published any articles. Click "Write Article" to get started.
           </p>
         </div>
       )}
 
-      {/* ── Filter pills ── */}
       {myBlogs.length > 0 && (
         <>
           <div className="myblogs-filters">
-            <button
-              className={`myblogs-filter-btn${filter === 'all' ? ' active' : ''}`}
-              onClick={() => setFilter('all')}
-            >
+            <button className={`myblogs-filter-btn${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>
               All ({myBlogs.length})
             </button>
             {allCats.map((cat) => (
-              <button
-                key={cat}
-                className={`myblogs-filter-btn${filter === cat ? ' active' : ''}`}
-                onClick={() => setFilter(cat)}
-              >
+              <button key={cat} className={`myblogs-filter-btn${filter === cat ? ' active' : ''}`} onClick={() => setFilter(cat)}>
                 {cat} ({myBlogs.filter((b) => b.category?.includes(cat)).length})
               </button>
             ))}
           </div>
 
-          {/* ── Blog list ── */}
           {filtered.length === 0 ? (
             <div className="state-center" style={{ padding: '3rem' }}>
               <span style={{ fontSize: '2rem' }}>📂</span>
@@ -131,46 +106,26 @@ export const MyBlogs = ({ onOpen }) => {
             <div className="myblogs-list">
               {filtered.map((blog, i) => (
                 <div key={blog._id} className="myblogs-item fade-up" style={{ animationDelay: `${i * 0.05}s` }}>
-
-                  {/* Thumbnail */}
                   <div className="myblogs-thumb">
                     <img src={blog.coverImage} alt={blog.title} />
                   </div>
-
-                  {/* Content */}
                   <div className="myblogs-item-body">
                     <div className="cats" style={{ marginBottom: '0.45rem' }}>
-                      {blog.category?.map((c) => (
-                        <span key={c} className="cat-chip">{c}</span>
-                      ))}
+                      {blog.category?.map((c) => <span key={c} className="cat-chip">{c}</span>)}
                     </div>
                     <h3 className="myblogs-item-title">{blog.title}</h3>
                     <p className="myblogs-item-desc">{blog.description}</p>
                     <div className="myblogs-item-meta">
-                      <span className="myblogs-meta-pill">
-                        <Calendar size={11} /> {fmt(blog.date)}
-                      </span>
-                      <span className="myblogs-meta-pill">
-                        <Clock size={11} /> {readTime(blog.content)}
-                      </span>
+                      <span className="myblogs-meta-pill"><Calendar size={11} /> {fmt(blog.date)}</span>
+                      <span className="myblogs-meta-pill"><Clock size={11} /> {readTime(blog.content)}</span>
                     </div>
                   </div>
-
-                  {/* Actions */}
                   <div className="myblogs-item-actions">
-                    <button
-                      className="myblogs-action-btn read"
-                      onClick={() => onOpen(blog._id)}
-                      title="Read article"
-                    >
+                    <button className="myblogs-action-btn read" onClick={() => onOpen(blog._id)} title="Read article">
                       <Eye size={14} /> Read
                     </button>
                   </div>
-
-                  {/* Index number */}
-                  <div className="myblogs-index">
-                    {String(i + 1).padStart(2, '0')}
-                  </div>
+                  <div className="myblogs-index">{String(i + 1).padStart(2, '0')}</div>
                 </div>
               ))}
             </div>

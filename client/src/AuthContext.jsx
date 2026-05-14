@@ -1,70 +1,84 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const AuthContext = createContext(null);
+const API = "http://localhost:3100";
 
-const makeUser = (name, email, provider = 'email', avatar = null) => ({
-  name,
-  email,
-  initials: name.slice(0, 2).toUpperCase(),
-  provider,
-  avatar,
-  joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-});
+// Send cookies with every request
+axios.defaults.withCredentials = true;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // ← loading while checking session
 
-  const login = (email, password) => {
-    if (email && password.length >= 6) {
-      const name = email.split('@')[0];
-      setUser(makeUser(name.charAt(0).toUpperCase() + name.slice(1), email));
+  // On app load — check if user has a valid cookie
+  useEffect(() => {
+    axios
+      .get(`${API}/me`)
+      .then((res) => setUser(res.data.user))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post(`${API}/signin`, { email, password });
+      setUser(res.data.user);
       return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.message || "Login failed.",
+      };
     }
-    return { success: false, error: 'Invalid credentials. Password must be at least 6 characters.' };
   };
 
-  const register = (name, email, password) => {
-    if (name && email && password.length >= 6) {
-      setUser(makeUser(name, email));
+  const register = async (name, email, password) => {
+    try {
+      const res = await axios.post(`${API}/signup`, {
+        fullname: name,
+        email,
+        password,
+      });
+      setUser(res.data.user);
       return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.message || "Registration failed.",
+      };
     }
-    return { success: false, error: 'Please fill all fields. Password must be at least 6 characters.' };
   };
 
-  // Simulated social auth — in production these would open OAuth popups
   const loginWithGoogle = () => {
-    setTimeout(() => {
-      setUser(makeUser('Google User', 'user@gmail.com', 'google',
-        'https://lh3.googleusercontent.com/a/default-user'));
-    }, 800);
+    window.open("http://localhost:3100/auth/google", "_self");
   };
 
-  const loginWithGitHub = () => {
-    setTimeout(() => {
-      setUser(makeUser('GitHub User', 'user@github.com', 'github'));
-    }, 800);
+  const logout = async () => {
+    await axios.post(`${API}/logout`);
+    setUser(null);
   };
 
-  const loginWithLinkedIn = () => {
-    setTimeout(() => {
-      setUser(makeUser('LinkedIn User', 'user@linkedin.com', 'linkedin'));
-    }, 800);
-  };
-
-  const loginWithMicrosoft = () => {
-    setTimeout(() => {
-      setUser(makeUser('Microsoft User', 'user@outlook.com', 'microsoft'));
-    }, 800);
-  };
-
-  const logout = () => setUser(null);
+  // Show nothing while checking session — prevents flash of login page
+  if (loading)
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "var(--bg)",
+        }}
+      >
+        <div className="spinner" />
+      </div>
+    );
 
   return (
-    <AuthContext.Provider value={{
-      user, login, register,
-      loginWithGoogle, loginWithGitHub, loginWithLinkedIn, loginWithMicrosoft,
-      logout,
-    }}>
+    <AuthContext.Provider
+      value={{ user, login, register, loginWithGoogle, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

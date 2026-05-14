@@ -7,6 +7,7 @@ export const blogKeys = {
   list: (filters) => [...blogKeys.lists(), { filters }],
   details: () => [...blogKeys.all, 'detail'],
   detail: (id) => [...blogKeys.details(), id],
+  user: (email) => [...blogKeys.all, 'user', email],
 };
 
 export function useBlogs() {
@@ -24,13 +25,25 @@ export function useBlog(id) {
   });
 }
 
+// Fetch only blogs posted by a specific user
+export function useMyBlogs(email) {
+  return useQuery({
+    queryKey: blogKeys.user(email),
+    queryFn: () => blogApi.getBlogsByUser(email),
+    enabled: !!email,
+  });
+}
+
 export function useCreateBlog() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (blog) => blogApi.createBlog(blog),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: blogKeys.lists() });
+      // Also invalidate user blogs so MyBlogs updates immediately
+      if (data?.author?.email) {
+        queryClient.invalidateQueries({ queryKey: blogKeys.user(data.author.email) });
+      }
     },
   });
 }
