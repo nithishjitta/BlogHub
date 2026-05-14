@@ -26,19 +26,19 @@ async function signUp(req, res) {
 
     // CREATE TOKEN
     const token = jwt.sign(
-  {
-    id: user._id,
-    name: user.fullname,
-    email: user.email,
-  },
-  process.env.JWT_SECRET,
-  { expiresIn: "7d" }
-);
+      {
+        id: user._id,
+        name: user.fullname,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
 
     const cookieOptions = {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
@@ -83,20 +83,20 @@ async function signIn(req, res) {
     }
 
     // CREATE TOKEN
-   const token = jwt.sign(
-  {
-    id: user._id,
-    name: user.fullname,
-    email: user.email,
-  },
-  process.env.JWT_SECRET,
-  { expiresIn: "7d" }
-);
+    const token = jwt.sign(
+      {
+        id: user._id,
+        name: user.fullname,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
 
     const cookieOptions = {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
