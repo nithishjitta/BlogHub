@@ -4,6 +4,7 @@ import { useAuth } from '../AuthContext';
 import {
   Dialog, DialogContent, DialogTrigger, DialogClose,
 } from './ui/dialog';
+import { DialogTitle, DialogDescription } from './ui/dialog';
 import { Plus, Loader2, PenLine, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -125,6 +126,13 @@ export const CreateBlogForm = () => {
         top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         zIndex: 301, boxShadow: 'var(--shadow-xl)', transition: 'background 0.25s',
       }}>
+        <DialogTitle style={{ display: 'none' }}>
+  Publish New Article
+</DialogTitle>
+
+<DialogDescription style={{ display: 'none' }}>
+  Form to create and publish a new blog article.
+</DialogDescription>
         <div className="dlg-head">
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem' }}>
             <div>
