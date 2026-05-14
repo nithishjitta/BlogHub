@@ -1673,3 +1673,21 @@ body > span{
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Dialog Blur Fix */
+[data-radix-dialog-overlay] {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  z-index: 999 !important;
+}
+
+[data-radix-dialog-content] {
+  z-index: 1000 !important;
+}
+
+.masthead {
+  z-index: 100 !important;
+}
