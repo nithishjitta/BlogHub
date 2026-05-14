@@ -13,52 +13,51 @@ export const AuthProvider = ({ children }) => {
 
   // On app load — check if user has a valid cookie
   useEffect(() => {
-    axios
-      .get(`${API}/me`)
-      .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, []);
+  axios
+    .get(API + "/me")
+    .then((res) => setUser(res.data.user))
+    .catch(() => setUser(null))
+    .finally(() => setLoading(false));
+}, []);
 
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post(`${API}/signin`, { email, password });
-      setUser(res.data.user);
-      return { success: true };
-    } catch (err) {
-      return {
-        success: false,
-        error: err.response?.data?.message || "Login failed.",
-      };
-    }
-  };
+const login = async (email, password) => {
+  try {
+    const res = await axios.post(API + "/signin", { email, password });
+    setUser(res.data.user);
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: err.response?.data?.message || "Login failed.",
+    };
+  }
+};
 
-  const register = async (name, email, password) => {
-    try {
-      const res = await axios.post(`${API}/signup`, {
-        fullname: name,
-        email,
-        password,
-      });
-      setUser(res.data.user);
-      return { success: true };
-    } catch (err) {
-      return {
-        success: false,
-        error: err.response?.data?.message || "Registration failed.",
-      };
-    }
-  };
+const register = async (name, email, password) => {
+  try {
+    const res = await axios.post(API + "/signup", {
+      fullname: name,
+      email,
+      password,
+    });
+    setUser(res.data.user);
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: err.response?.data?.message || "Registration failed.",
+    };
+  }
+};
 
-  const loginWithGoogle = () => {
-    window.open(`${API}/auth/google`, "_self");
-  };
+const loginWithGoogle = () => {
+  window.open(API + "/auth/google", "_self");
+};
 
-  const logout = async () => {
-    await axios.post(`${API}/logout`);
-    setUser(null);
-  };
-
+const logout = async () => {
+  await axios.post(API + "/logout");
+  setUser(null);
+};
   // Show nothing while checking session — prevents flash of login page
   if (loading)
     return (
