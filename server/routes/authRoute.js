@@ -55,7 +55,7 @@ router.get(
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "http://localhost:5173",
+    failureRedirect: process.env.FRONTEND_URL,
     session: false,
   }),
   (req, res) => {
@@ -76,7 +76,7 @@ router.get(
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 
-    res.redirect("http://localhost:5173");
+    res.redirect(process.env.FRONTEND_URL);
   }
 );
 
