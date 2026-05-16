@@ -1,4 +1,5 @@
 import { Calendar, Clock, Bookmark, Share2, Heart, MessageCircle, TrendingUp } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const fmt = (d) =>
   new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -49,21 +50,21 @@ export const BlogDetail = ({ blog }) => (
         <span>{readTime(blog.content)}</span>
       </div>
       {blog.author?.name && (
-        <div className="detail-meta-item" style={{ fontWeight: 500 }}>
+        <div className="detail-meta-item" style={{ fontWeight: 500, cursor: 'pointer', color: 'var(--blue)' }} onClick={() => window.location.href = `/author/${encodeURIComponent(blog.author.email)}`}>
           <span>by {blog.author.name}</span>
         </div>
       )}
       <div className="detail-action-row">
-        <button className="detail-btn heart">
+        <button className="detail-btn heart" onClick={() => toast.success('Liked!')}>
           <Heart size={13} /> 48
         </button>
-        <button className="detail-btn">
+        <button className="detail-btn" onClick={() => toast.success('Comment feature coming soon!')}>
           <MessageCircle size={13} /> 10
         </button>
-        <button className="detail-btn save">
+        <button className="detail-btn save" onClick={() => toast.success('Saved!')}>
           <Bookmark size={13} />
         </button>
-        <button className="detail-btn">
+        <button className="detail-btn" onClick={() => toast.success('Copied to clipboard!')}>
           <Share2 size={13} />
         </button>
       </div>

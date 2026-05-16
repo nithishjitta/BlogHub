@@ -170,6 +170,9 @@ export const Layout = () => {
             </div>
 
             <div className="mobile-menu-footer">
+              <button className="mobile-menu-item danger" onClick={handleLogout}>
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
@@ -186,9 +189,6 @@ export const Layout = () => {
           <div className="footer-inner">
             <span className="footer-logo">Blog<span className="footer-logo-dot">.</span>Hub</span>
             <span className="footer-copy">© 2026 BlogHub — Curated insights for finance professionals</span>
-            <button className="btn btn-sm btn-ghost" onClick={handleLogout}>
-              <LogOut size={13} /> Sign out
-            </button>
           </div>
         </footer>
       )}

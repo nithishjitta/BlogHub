@@ -5,6 +5,7 @@ import { HomePage } from './components/HomePage';
 import { BlogDetailPage } from './components/BlogDetailPage';
 import { MyBlogsPage } from './components/MyBlogsPage';
 import { WriteBlogPage } from './components/WriteBlogPage';
+import { AuthorProfilePage } from './components/AuthorProfilePage';
 import { Layout } from './components/Layout';
 import { Toaster } from 'react-hot-toast';
 
@@ -51,6 +52,9 @@ function App() {
 
           {/* /my-blogs → User's own articles */}
           <Route path="my-blogs" element={<MyBlogsPage />} />
+
+          {/* /author/:email → Author profile and their articles */}
+          <Route path="author/:email" element={<AuthorProfilePage />} />
 
           {/* /write → Publish a new article */}
           <Route path="write" element={<WriteBlogPage />} />
