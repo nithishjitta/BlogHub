@@ -113,12 +113,12 @@ export const CreateBlogForm = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="btn btn-md btn-blue">
+        <button className="btn btn-md btn-blue write-article-btn">
           <PenLine size={14} /> Write Article
         </button>
       </DialogTrigger>
 
-      <DialogContent style={{
+      <DialogContent className="dialog-panel" style={{
         background: 'var(--surface)', border: '1.5px solid var(--border)',
         borderRadius: '18px', maxWidth: '780px', width: '92vw', maxHeight: '90vh',
         overflow: 'hidden', display: 'flex', flexDirection: 'column',
