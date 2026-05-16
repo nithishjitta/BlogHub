@@ -10,44 +10,29 @@ export const Layout = () => {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-
   const [searchQuery, setSearchQuery] = useState('');
 
   const isHome = location.pathname === '/';
   const isMyBlogs = location.pathname === '/my-blogs';
   const isDetail = location.pathname.startsWith('/blogs/');
 
-  const handleLogout = () => {
-    logout();
+  // ← await logout THEN navigate so cookie is cleared before redirect
+  const handleLogout = async () => {
+    await logout();
     navigate('/auth', { replace: true });
   };
 
   return (
-    <div
-  style={{
-    minHeight: '100vh',
-    background: 'var(--bg)',
-    transition: 'background 0.25s',
-    display: 'flex',
-    flexDirection: 'column',
-  }}
->
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', transition: 'background 0.25s', display: 'flex', flexDirection: 'column' }}>
 
-      {/* ─── NAVBAR ─── */}
       <header className="masthead">
         <div className="masthead-bar">
 
-          {/* Back button in navbar — only on detail pages */}
           {isDetail ? (
-            <button
-              className="btn btn-sm btn-outline"
-              onClick={() => navigate('/')}
-              style={{ flexShrink: 0 }}
-            >
+            <button className="btn btn-sm btn-outline" onClick={() => navigate('/')} style={{ flexShrink: 0 }}>
               <ArrowLeft size={13} /> Back
             </button>
           ) : (
-            /* Logo — only when not on detail page */
             <div className="site-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
               Blog<span className="site-logo-dot">.</span>Hub
               <small className="site-logo-sub">Finance · Career · Tech</small>
@@ -56,25 +41,17 @@ export const Layout = () => {
 
           <div className="nav-sep" />
 
-          {/* Nav tabs */}
           <div className="nav-tabs">
-            <button
-              className={`nav-tab${isHome || isDetail ? ' active' : ''}`}
-              onClick={() => navigate('/')}
-            >
+            <button className={`nav-tab${isHome || isDetail ? ' active' : ''}`} onClick={() => navigate('/')}>
               <LayoutGrid size={13} /> All Articles
             </button>
-            <button
-              className={`nav-tab${isMyBlogs ? ' active' : ''}`}
-              onClick={() => navigate('/my-blogs')}
-            >
+            <button className={`nav-tab${isMyBlogs ? ' active' : ''}`} onClick={() => navigate('/my-blogs')}>
               <BookOpen size={13} /> My Blogs
             </button>
           </div>
 
           <div className="nav-sep" />
 
-          {/* Search — only on home / detail views */}
           {(isHome || isDetail) && (
             <div className="nav-search">
               <svg className="nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -84,10 +61,7 @@ export const Layout = () => {
                 className="nav-search-input"
                 placeholder="Search articles…"
                 value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  if (isDetail) navigate('/');
-                }}
+                onChange={(e) => { setSearchQuery(e.target.value); if (isDetail) navigate('/'); }}
               />
               {searchQuery && (
                 <button className="nav-search-x" onClick={() => setSearchQuery('')}>
@@ -97,20 +71,14 @@ export const Layout = () => {
             </div>
           )}
 
-          {/* Right actions */}
           <div className="nav-right">
             <CreateBlogForm />
-
             <button className="theme-toggle" onClick={toggle} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
-
             <div className="user-chip" onClick={handleLogout} title="Click to sign out">
               <div className="user-avi">
-                <img
-                  src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-                  alt="User avatar"
-                />
+                <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="User avatar" />
               </div>
               <span className="user-nm">{user?.name?.split(' ')[0]}</span>
             </div>
@@ -118,12 +86,10 @@ export const Layout = () => {
         </div>
       </header>
 
-      {/* ─── PAGE CONTENT ─── */}
       <div style={{ flex: 1 }}>
-  <Outlet context={{ searchQuery, setSearchQuery }} />
-</div>
+        <Outlet context={{ searchQuery, setSearchQuery }} />
+      </div>
 
-      {/* ─── FOOTER — hide on detail pages ─── */}
       {!isDetail && (
         <footer className="site-footer">
           <div className="footer-inner">

@@ -1698,3 +1698,171 @@ body:has([data-radix-dialog-overlay]) {
 [data-radix-dialog-content] {
   z-index: 10000 !important;
 }
+
+button:hover {
+  background-color: unset;
+}
+ 
+/* ── FIX 2: Full page blur when dialog opens ── */
+[data-radix-dialog-overlay] {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(2, 6, 23, 0.55) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  z-index: 9998 !important;
+}
+ 
+[data-theme="dark"] [data-radix-dialog-overlay] {
+  background: rgba(0, 0, 0, 0.72) !important;
+}
+ 
+[data-radix-dialog-content] {
+  z-index: 9999 !important;
+}
+ 
+/* Navbar must NOT be above dialog overlay */
+.masthead {
+  z-index: 100 !important;
+}
+ 
+/* ── FIX 3: Human-made UI feel ── */
+ 
+/* Slightly asymmetric hero — feels hand-crafted */
+.hero-h1 {
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+ 
+/* Cards — reduce uniform roundness, add texture */
+.blog-card {
+  border-radius: 10px;
+}
+ 
+.featured-card {
+  border-radius: 12px;
+}
+ 
+/* Less perfect shadows — more natural depth */
+.blog-card:hover {
+  box-shadow: 0 8px 24px rgba(15,23,42,0.09), 0 2px 6px rgba(15,23,42,0.05);
+  transform: translateY(-3px);
+}
+ 
+/* Navbar — slightly more compact, less "designed" */
+.masthead-bar {
+  height: 58px;
+}
+ 
+/* Category chips — less uniform */
+.cat-chip {
+  border-radius: 3px;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+ 
+/* Featured badge — less perfect */
+.feat-badge {
+  border-radius: 3px;
+  letter-spacing: 0.12em;
+}
+ 
+/* Blog detail — slightly off-center feel */
+.detail-wrap {
+  padding: 2.5rem 2rem 5rem 2.5rem;
+}
+ 
+/* Auth form — remove over-engineered shadows */
+.auth-submit {
+  box-shadow: 0 2px 6px rgba(37,99,235,0.2);
+  letter-spacing: 0.01em;
+}
+ 
+/* Sidebar items — tighter, more editorial */
+.aside-item {
+  padding: 0.85rem 1rem;
+}
+ 
+/* My blogs items — less card-like, more list-like */
+.myblogs-item {
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+}
+ 
+/* Form inputs — slightly less polished */
+.f-inp, .f-area {
+  border-radius: 7px;
+}
+ 
+/* Remove floating effect from submit buttons */
+.f-submit:hover:not(:disabled) {
+  transform: none;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+}
+ 
+.auth-submit:hover:not(:disabled) {
+  transform: none;
+}
+ 
+/* Google button — cleaner */
+.google-auth-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+ 
+/* Detail lede — slightly less structured */
+.detail-lede {
+  border-radius: 0 8px 8px 0;
+  font-size: 1.08rem;
+}
+ 
+/* Key insight — more natural */
+.key-insight {
+  border-radius: 0 8px 8px 0;
+}
+ 
+/* Tags — more editorial pill shape */
+.tag-pill {
+  border-radius: 3px;
+  font-size: 0.75rem;
+}
+ 
+/* Section head — thinner, less bold */
+.sec-head-label {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+ 
+/* Footer — simpler */
+.site-footer {
+  border-top: 1px solid var(--border);
+}
+ 
+/* User chip — less prominent */
+.user-chip:hover {
+  box-shadow: 0 0 0 2px var(--blue-glow);
+}
+ 
+/* Nav tabs — less pill-like */
+.nav-tab {
+  border-radius: 6px;
+  font-size: 0.79rem;
+}
+ 
+/* ── FIX 4: Prevent styles.css body override fighting index.css ── */
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  color: var(--text) !important;
+  background-color: var(--bg) !important;
+}
+ 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lora', Georgia, serif !important;
+}
+ 
+input, textarea, button, select {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
