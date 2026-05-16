@@ -166,14 +166,10 @@ export const Layout = () => {
 
             <div className="mobile-menu-list">
               <button className={`mobile-menu-item${isHome || isDetail ? ' active' : ''}`} onClick={() => handleNavigate('/')}>Articles</button>
-              <button className={`mobile-menu-item${isMyBlogs ? ' active' : ''}`} onClick={() => handleNavigate('/my-blogs')}>My Blogs</button>
               <button className={`mobile-menu-item${isWrite ? ' active' : ''}`} onClick={() => handleNavigate('/write')}>Write Article</button>
             </div>
 
             <div className="mobile-menu-footer">
-              <button className="mobile-menu-item danger" onClick={handleLogout}>
-                Sign Out
-              </button>
             </div>
           </div>
         </div>

@@ -136,7 +136,7 @@ input:focus, textarea:focus, select:focus { outline: none; }
    THEME TOGGLE
    ================================================================ */
 .theme-toggle {
-  width: 34px; height: 34px; border-radius: 8px;
+  width: 40px; height: 40px; border-radius: 8px;
   border: 1px solid var(--border); background: var(--surface);
   color: var(--text-muted); display: flex; align-items: center;
   justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
@@ -306,7 +306,7 @@ input:focus, textarea:focus, select:focus { outline: none; }
 
 .nav-right { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 
-.mobile-menu-toggle { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; transition: all 0.2s; }
+.mobile-menu-toggle { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; transition: all 0.2s; }
 .mobile-menu-toggle:hover { background: var(--bg-2); }
 
 /* ── BUTTONS ── */
@@ -486,7 +486,7 @@ input:focus, textarea:focus, select:focus { outline: none; }
    ================================================================ */
 .split-root { display: flex; height: calc(100vh - 58px); overflow: hidden; }
 
-.split-aside { width: 290px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg-2); transition: background 0.3s; }
+.split-aside { width: 380px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg-2); transition: background 0.3s; }
 [data-theme="dark"] .split-aside { background: var(--bg); }
 
 .aside-item { display: flex; gap: 0.72rem; padding: 0.88rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; align-items: flex-start; }
@@ -666,7 +666,7 @@ body > span { display: none !important; }
   .feat-img { min-height: 230px; }
   .feat-body { border-left: none; border-top: 1px solid var(--border); padding: 1.6rem; }
   .blog-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
-  .split-aside { width: 250px; }
+  .split-aside { width: 300px; }
   .f-grid2 { grid-template-columns: 1fr; }
   .f-span2 { grid-column: 1; }
 }

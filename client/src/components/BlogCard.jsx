@@ -18,9 +18,12 @@ const FeaturedCard = ({ blog, onClick }) => (
       <h2 className="feat-title">{blog.title}</h2>
       <p className="feat-desc">{blog.description}</p>
       <div className="art-foot">
-        <div className="art-date">
-          <Calendar size={13} />
-          <span>{fmt(blog.date)}</span>
+        <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', fontSize: '0.85rem', color: 'var(--text-faint)' }}>
+          <div className="art-date">
+            <Calendar size={13} />
+            <span>{fmt(blog.date)}</span>
+          </div>
+          {blog.author?.name && <span style={{ fontWeight: 500, color: 'var(--text)' }}>by {blog.author.name}</span>}
         </div>
         <span className="read-cta">Read Article <ArrowRight size={13} /></span>
       </div>
@@ -42,9 +45,12 @@ const GridCard = ({ blog, onClick, isActive }) => (
       <h3 className="card-title">{blog.title}</h3>
       <p className="card-desc">{blog.description}</p>
       <div className="card-foot">
-        <div className="art-date">
-          <Calendar size={12} />
-          <span>{fmt(blog.date)}</span>
+        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', fontSize: '0.8rem', color: 'var(--text-faint)' }}>
+          <div className="art-date">
+            <Calendar size={12} />
+            <span>{fmt(blog.date)}</span>
+          </div>
+          {blog.author?.name && <span style={{ fontWeight: 500, color: 'var(--text)' }}>by {blog.author.name}</span>}
         </div>
         <span className="read-cta" style={{ fontSize: '0.74rem' }}>
           Read <ArrowRight size={12} />
@@ -65,7 +71,10 @@ const SidebarCard = ({ blog, onClick, isActive }) => (
         {blog.category.slice(0, 2).map((c) => <span key={c} className="aside-cat">{c}</span>)}
       </div>
       <div className="aside-title">{blog.title}</div>
-      <div className="aside-date">{fmt(blog.date)}</div>
+      <div style={{ fontSize: '0.75rem', color: 'var(--text-faint)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.35rem' }}>
+        <span>{fmt(blog.date)}</span>
+        {blog.author?.name && <span style={{ fontWeight: 500, color: 'var(--text)' }}>{blog.author.name}</span>}
+      </div>
     </div>
   </div>
 );

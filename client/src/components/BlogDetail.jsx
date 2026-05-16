@@ -48,6 +48,11 @@ export const BlogDetail = ({ blog }) => (
         <Clock size={13} />
         <span>{readTime(blog.content)}</span>
       </div>
+      {blog.author?.name && (
+        <div className="detail-meta-item" style={{ fontWeight: 500 }}>
+          <span>by {blog.author.name}</span>
+        </div>
+      )}
       <div className="detail-action-row">
         <button className="detail-btn heart">
           <Heart size={13} /> 48
