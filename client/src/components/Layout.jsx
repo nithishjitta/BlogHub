@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useTheme } from '../ThemeContext';
-import { CreateBlogForm } from './CreateBlogForm';
-import { X, Sun, Moon, LayoutGrid, BookOpen, ArrowLeft, LogOut, User, PenLine } from 'lucide-react';
+import { X, Sun, Moon, LayoutGrid, BookOpen, ArrowLeft, LogOut, PenLine } from 'lucide-react';
 
 export const Layout = () => {
   const { user, logout } = useAuth();
@@ -96,7 +95,9 @@ export const Layout = () => {
 
           {/* Right actions */}
           <div className="nav-right">
-            <CreateBlogForm />
+            <button className="btn btn-md btn-blue write-article-btn" onClick={() => navigate('/write')}>
+              <PenLine size={14} /> Write Article
+            </button>
 
             <button className="theme-toggle" onClick={toggle} title="Toggle theme">
               {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
@@ -152,9 +153,13 @@ export const Layout = () => {
           <span>Articles</span>
         </button>
 
-        <div className="mobile-tab-write">
-          <CreateBlogForm mobile />
-        </div>
+        <button
+          className={`mobile-tab mobile-tab-write${isWrite ? ' active' : ''}`}
+          onClick={() => navigate('/write')}
+        >
+          <PenLine size={20} />
+          <span>Write</span>
+        </button>
 
         <button
           className={`mobile-tab${isMyBlogs ? ' active' : ''}`}
