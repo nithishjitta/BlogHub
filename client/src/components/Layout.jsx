@@ -67,10 +67,6 @@ export const Layout = () => {
             </div>
           )}
 
-          <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen((open) => !open)}>
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-
           <div className="nav-sep" />
 
           {/* Nav tabs — desktop only */}
@@ -80,9 +76,6 @@ export const Layout = () => {
             </button>
             <button className={`nav-tab${isMyBlogs ? ' active' : ''}`} onClick={() => navigate('/my-blogs')}>
               <BookOpen size={13} /> My Blogs
-            </button>
-            <button className={`nav-tab${isWrite ? ' active' : ''}`} onClick={() => navigate('/write')}>
-              <PenLine size={13} /> Write
             </button>
           </div>
 
@@ -110,6 +103,10 @@ export const Layout = () => {
 
           {/* Right actions */}
           <div className="nav-right">
+            <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen((open) => !open)}>
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+
             <button className="btn btn-md btn-blue write-article-btn" onClick={() => navigate('/write')}>
               <PenLine size={14} /> Write Article
             </button>
@@ -174,9 +171,6 @@ export const Layout = () => {
             </div>
 
             <div className="mobile-menu-footer">
-              <button className="mobile-menu-item" onClick={toggle}>
-                Toggle Theme
-              </button>
               <button className="mobile-menu-item danger" onClick={handleLogout}>
                 Sign Out
               </button>

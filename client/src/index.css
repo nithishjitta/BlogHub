@@ -417,7 +417,7 @@ input:focus, textarea:focus, select:focus { outline: none; }
 .mobile-menu-footer { margin-top: auto; display: grid; gap: 0.75rem; }
 .mobile-menu-item.danger { color: var(--accent-red); border-color: rgba(220,38,38,0.24); }
 
-.f-inp, .f-area { width: 100%; background: var(--surface); border: 1px solid var(--border-2); border-radius: 7px; color: var(--text); font-size: 0.87rem; padding: 0.65rem 0.88rem; transition: all 0.2s; resize: none; }
+.f-inp, .f-area { width: 100%; background: var(--surface); border: 1px solid var(--border-2); border-radius: 7px; color: var(--text); font-size: 0.87rem; padding: 0.65rem 0.88rem; transition: all 0.2s; resize: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02); }
 .f-inp::placeholder, .f-area::placeholder { color: var(--text-faint); }
 .f-inp:hover, .f-area:hover { border-color: var(--border); }
 .f-inp:focus, .f-area:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-glow); background: var(--surface); }
