@@ -81,8 +81,13 @@ router.get(
 );
 
 router.post('/logout', (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    path: '/',
+  });
   res.json({ success: true });
-})
+});
 
 module.exports = router;

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useTheme } from '../ThemeContext';
-import { X, Sun, Moon, LayoutGrid, BookOpen, ArrowLeft, LogOut, PenLine } from 'lucide-react';
+import { X, Menu, Sun, Moon, LayoutGrid, BookOpen, ArrowLeft, LogOut, PenLine } from 'lucide-react';
 
 export const Layout = () => {
   const { user, logout } = useAuth();
@@ -12,6 +12,7 @@ export const Layout = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const profileRef = useRef(null);
 
   const isHome = location.pathname === '/';
@@ -30,11 +31,21 @@ export const Layout = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
   // ← await logout so cookie clears before redirect
   const handleLogout = async () => {
     setProfileOpen(false);
+    setMobileMenuOpen(false);
     await logout();
     navigate('/auth', { replace: true });
+  };
+
+  const handleNavigate = (path) => {
+    setMobileMenuOpen(false);
+    navigate(path);
   };
 
   return (
@@ -55,6 +66,10 @@ export const Layout = () => {
               <small className="site-logo-sub">Finance · Career · Tech</small>
             </div>
           )}
+
+          <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen((open) => !open)}>
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
 
           <div className="nav-sep" />
 
@@ -138,37 +153,42 @@ export const Layout = () => {
         </div>
       </header>
 
+      {mobileMenuOpen && (
+        <div className="mobile-menu-drawer">
+          <div className="mobile-menu-backdrop" onClick={() => setMobileMenuOpen(false)} />
+          <div className="mobile-menu-panel">
+            <div className="mobile-menu-header">
+              <div>
+                <div className="mobile-menu-title">Navigation</div>
+                <div className="mobile-menu-sub">Quick access to every page</div>
+              </div>
+              <button className="mobile-menu-close" onClick={() => setMobileMenuOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mobile-menu-list">
+              <button className={`mobile-menu-item${isHome || isDetail ? ' active' : ''}`} onClick={() => handleNavigate('/')}>Articles</button>
+              <button className={`mobile-menu-item${isMyBlogs ? ' active' : ''}`} onClick={() => handleNavigate('/my-blogs')}>My Blogs</button>
+              <button className={`mobile-menu-item${isWrite ? ' active' : ''}`} onClick={() => handleNavigate('/write')}>Write Article</button>
+            </div>
+
+            <div className="mobile-menu-footer">
+              <button className="mobile-menu-item" onClick={toggle}>
+                Toggle Theme
+              </button>
+              <button className="mobile-menu-item danger" onClick={handleLogout}>
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── PAGE CONTENT ─── */}
       <div style={{ flex: 1, paddingBottom: '70px' }} className="main-content-area">
         <Outlet context={{ searchQuery, setSearchQuery }} />
       </div>
-
-      {/* ─── MOBILE BOTTOM TAB BAR ─── */}
-      <nav className="mobile-tabbar">
-        <button
-          className={`mobile-tab${isHome || isDetail ? ' active' : ''}`}
-          onClick={() => navigate('/')}
-        >
-          <LayoutGrid size={20} />
-          <span>Articles</span>
-        </button>
-
-        <button
-          className={`mobile-tab mobile-tab-write${isWrite ? ' active' : ''}`}
-          onClick={() => navigate('/write')}
-        >
-          <PenLine size={20} />
-          <span>Write</span>
-        </button>
-
-        <button
-          className={`mobile-tab${isMyBlogs ? ' active' : ''}`}
-          onClick={() => navigate('/my-blogs')}
-        >
-          <BookOpen size={20} />
-          <span>My Blogs</span>
-        </button>
-      </nav>
 
       {/* ─── FOOTER — desktop only, hide on detail ─── */}
       {!isDetail && (
