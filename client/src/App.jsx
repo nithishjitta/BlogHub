@@ -4,6 +4,7 @@ import { AuthPage } from './AuthPage';
 import { HomePage } from './components/HomePage';
 import { BlogDetailPage } from './components/BlogDetailPage';
 import { MyBlogsPage } from './components/MyBlogsPage';
+import { WriteBlogPage } from './components/WriteBlogPage';
 import { Layout } from './components/Layout';
 import { Toaster } from 'react-hot-toast';
 
@@ -50,6 +51,9 @@ function App() {
 
           {/* /my-blogs → User's own articles */}
           <Route path="my-blogs" element={<MyBlogsPage />} />
+
+          {/* /write → Publish a new article */}
+          <Route path="write" element={<WriteBlogPage />} />
         </Route>
 
         {/* Catch-all → redirect to home (or auth if not logged in) */}
