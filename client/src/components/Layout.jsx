@@ -176,9 +176,6 @@ export const Layout = () => {
               <button className={`mobile-menu-item${isWrite ? ' active' : ''}`} onClick={() => handleNavigate('/write')}>
                 <PenLine size={16} style={{ marginRight: '0.5rem' }} /> Write Article
               </button>
-            </div>
-
-            <div className="mobile-menu-footer">
               <button className="mobile-menu-item danger" onClick={handleLogout}>
                 <LogOut size={16} style={{ marginRight: '0.5rem' }} /> Sign Out
               </button>
