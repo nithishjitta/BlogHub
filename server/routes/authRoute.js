@@ -5,6 +5,14 @@ const Blog = require('../model/blog');
 const jwt = require('jsonwebtoken');
 const passport = require("passport");
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  path: '/',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
 router.post('/signup', signUp);
 router.post('/signin', signIn);
 
@@ -69,12 +77,7 @@ router.get(
       { expiresIn: "7d" }
     );
 
-    res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+    res.cookie("token", token, cookieOptions);
 
     res.redirect(process.env.FRONTEND_URL);
   }
@@ -83,8 +86,8 @@ router.get(
 router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/',
   });
   res.json({ success: true });

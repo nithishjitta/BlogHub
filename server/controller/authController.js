@@ -2,6 +2,14 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../model/auth");
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  path: '/',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
 async function signUp(req, res) {
   try {
     const body = req.body;
@@ -34,13 +42,6 @@ async function signUp(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
-
-    const cookieOptions = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    };
 
     res.cookie("token", token, cookieOptions);
 
@@ -92,13 +93,6 @@ async function signIn(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
-
-    const cookieOptions = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    };
 
     console.log("Login successful for user:", user.email);
 
