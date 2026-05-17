@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const AuthContext = createContext(null);
@@ -12,13 +12,34 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    axios
-      .get(API + "/me")
-      .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+  // Single source of truth — check session from server
+  const checkSession = useCallback(async () => {
+    try {
+      const res = await axios.get(API + "/me");
+      setUser(res.data.user);
+    } catch {
+      setUser(null);
+    }
   }, []);
+
+  // Check on mount
+  useEffect(() => {
+    checkSession().finally(() => setLoading(false));
+  }, [checkSession]);
+
+  // ← Re-check session when tab becomes visible again
+  // This fixes the desktop mode / mobile mode viewport switch issue:
+  // When browser switches viewport, React re-mounts and /me is called
+  // If cookie was cleared, user is null → redirect to /auth
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        checkSession();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [checkSession]);
 
   const login = async (email, password) => {
     try {
@@ -44,11 +65,11 @@ export const AuthProvider = ({ children }) => {
     window.open(API + "/auth/google", "_self");
   };
 
-  // ← Properly clear cookie then null out user
   const logout = async () => {
     try {
       await axios.post(API + "/logout");
     } catch (_) {}
+    // Always clear user state regardless of server response
     setUser(null);
   };
 
