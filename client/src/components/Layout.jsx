@@ -54,7 +54,6 @@ export const Layout = () => {
       <header className="masthead">
         <div className="masthead-bar">
 
-          {/* Logo / Back */}
           {isDetail ? (
             <button className="btn btn-sm btn-outline" onClick={() => navigate('/')} style={{ flexShrink: 0 }}>
               <ArrowLeft size={13} /> Back
@@ -68,7 +67,7 @@ export const Layout = () => {
 
           <div className="nav-sep" />
 
-          {/* Nav tabs — desktop only */}
+          {/* Desktop nav tabs only */}
           <div className="nav-tabs">
             <button className={`nav-tab${isHome || isDetail ? ' active' : ''}`} onClick={() => navigate('/')}>
               <LayoutGrid size={13} /> All Articles
@@ -80,7 +79,6 @@ export const Layout = () => {
 
           <div className="nav-sep" />
 
-          {/* Search */}
           {(isHome || isDetail) && (
             <div className="nav-search">
               <svg className="nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -100,14 +98,13 @@ export const Layout = () => {
             </div>
           )}
 
-          {/* Right */}
           <div className="nav-right">
-            {/* Mobile hamburger — only on mobile */}
+            {/* Mobile hamburger — only visible on mobile via CSS */}
             <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(v => !v)}>
               {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
 
-            {/* Write button — desktop only */}
+            {/* Desktop write button */}
             <button className="btn btn-md btn-blue write-article-btn" onClick={() => navigate('/write')}>
               <PenLine size={14} /> Write Article
             </button>
@@ -116,7 +113,7 @@ export const Layout = () => {
               {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            {/* Profile dropdown — desktop only */}
+            {/* Desktop profile dropdown — hidden on mobile via CSS */}
             <div className="profile-wrap" ref={profileRef}>
               <button className="user-chip" onClick={() => setProfileOpen(v => !v)}>
                 <div className="user-avi">
@@ -137,10 +134,7 @@ export const Layout = () => {
                     </div>
                   </div>
                   <div className="profile-dropdown-divider" />
-                  <button className="profile-dropdown-item" onClick={() => { navigate('/my-blogs'); setProfileOpen(false); }}>
-                    <BookOpen size={14} /> My Blogs
-                  </button>
-                  <div className="profile-dropdown-divider" />
+                  {/* ← Removed My Blogs here — already in nav tabs */}
                   <button className="profile-dropdown-item danger" onClick={handleLogout}>
                     <LogOut size={14} /> Sign out
                   </button>
@@ -156,31 +150,49 @@ export const Layout = () => {
         <div className="mobile-menu-drawer">
           <div className="mobile-menu-backdrop" onClick={() => setMobileMenuOpen(false)} />
           <div className="mobile-menu-panel">
+
+            {/* User info at top */}
             <div className="mobile-menu-header">
-              <div>
-                <div className="mobile-menu-title">Menu</div>
-                <div className="mobile-menu-sub">{user?.name} · {user?.email}</div>
+              <div className="mobile-menu-user">
+                <div className="mobile-menu-avi">
+                  <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="avatar" />
+                </div>
+                <div>
+                  <div className="mobile-menu-title">{user?.name}</div>
+                  <div className="mobile-menu-sub">{user?.email}</div>
+                </div>
               </div>
               <button className="mobile-menu-close" onClick={() => setMobileMenuOpen(false)}>
                 <X size={16} />
               </button>
             </div>
 
+            {/* Nav links */}
             <div className="mobile-menu-list">
-              <button className={`mobile-menu-item${isHome || isDetail ? ' active' : ''}`} onClick={() => handleNavigate('/')}>
-                <LayoutGrid size={16} style={{ marginRight: '0.5rem' }} /> All Articles
+              <button
+                className={`mobile-menu-item${isHome || isDetail ? ' active' : ''}`}
+                onClick={() => handleNavigate('/')}
+              >
+                <LayoutGrid size={16} /> All Articles
               </button>
-              <button className={`mobile-menu-item${isMyBlogs ? ' active' : ''}`} onClick={() => handleNavigate('/my-blogs')}>
-                <BookOpen size={16} style={{ marginRight: '0.5rem' }} /> My Blogs
+              <button
+                className={`mobile-menu-item${isMyBlogs ? ' active' : ''}`}
+                onClick={() => handleNavigate('/my-blogs')}
+              >
+                <BookOpen size={16} /> My Blogs
               </button>
-              <button className={`mobile-menu-item${isWrite ? ' active' : ''}`} onClick={() => handleNavigate('/write')}>
-                <PenLine size={16} style={{ marginRight: '0.5rem' }} /> Write Article
+              <button
+                className={`mobile-menu-item${isWrite ? ' active' : ''}`}
+                onClick={() => handleNavigate('/write')}
+              >
+                <PenLine size={16} /> Write Article
               </button>
             </div>
 
+            {/* Sign out at bottom */}
             <div className="mobile-menu-footer">
               <button className="mobile-menu-item danger" onClick={handleLogout}>
-                <LogOut size={16} style={{ marginRight: '0.5rem' }} /> Sign Out
+                <LogOut size={16} /> Sign Out
               </button>
             </div>
           </div>
@@ -198,17 +210,12 @@ export const Layout = () => {
           className={`mobile-tab${isHome || isDetail ? ' active' : ''}`}
           onClick={() => navigate('/')}
         >
-          <LayoutGrid size={19} />
+          <LayoutGrid size={20} />
           <span>Articles</span>
         </button>
 
-        {/* Centre FAB — Write */}
         <div className="mobile-tab-write">
-          <button
-            className="mobile-write-fab"
-            onClick={() => navigate('/write')}
-            title="Write Article"
-          >
+          <button className="mobile-write-fab" onClick={() => navigate('/write')} title="Write">
             <PenLine size={18} />
           </button>
         </div>
@@ -217,12 +224,12 @@ export const Layout = () => {
           className={`mobile-tab${isMyBlogs ? ' active' : ''}`}
           onClick={() => navigate('/my-blogs')}
         >
-          <BookOpen size={19} />
+          <BookOpen size={20} />
           <span>My Blogs</span>
         </button>
       </nav>
 
-      {/* ─── FOOTER — desktop only ─── */}
+      {/* ─── FOOTER ─── */}
       {!isDetail && (
         <footer className="site-footer">
           <div className="footer-inner">
