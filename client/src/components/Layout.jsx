@@ -15,11 +15,12 @@ export const Layout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const profileRef = useRef(null);
 
-  const isHome = location.pathname === '/';
+  const isHome    = location.pathname === '/';
   const isMyBlogs = location.pathname === '/my-blogs';
-  const isWrite = location.pathname === '/write';
-  const isDetail = location.pathname.startsWith('/blogs/');
+  const isWrite   = location.pathname === '/write';
+  const isDetail  = location.pathname.startsWith('/blogs/');
 
+  // Close profile dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -30,6 +31,7 @@ export const Layout = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  // Close drawer on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setProfileOpen(false);
@@ -42,7 +44,7 @@ export const Layout = () => {
     navigate('/auth', { replace: true });
   };
 
-  const handleNavigate = (path) => {
+  const go = (path) => {
     setMobileMenuOpen(false);
     navigate(path);
   };
@@ -54,6 +56,7 @@ export const Layout = () => {
       <header className="masthead">
         <div className="masthead-bar">
 
+          {/* Logo or Back button */}
           {isDetail ? (
             <button className="btn btn-sm btn-outline" onClick={() => navigate('/')} style={{ flexShrink: 0 }}>
               <ArrowLeft size={13} /> Back
@@ -67,7 +70,7 @@ export const Layout = () => {
 
           <div className="nav-sep" />
 
-          {/* Desktop nav tabs only */}
+          {/* Desktop nav tabs */}
           <div className="nav-tabs">
             <button className={`nav-tab${isHome || isDetail ? ' active' : ''}`} onClick={() => navigate('/')}>
               <LayoutGrid size={13} /> All Articles
@@ -79,6 +82,7 @@ export const Layout = () => {
 
           <div className="nav-sep" />
 
+          {/* Search */}
           {(isHome || isDetail) && (
             <div className="nav-search">
               <svg className="nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -98,26 +102,39 @@ export const Layout = () => {
             </div>
           )}
 
+          {/* Right actions */}
           <div className="nav-right">
-            {/* Mobile hamburger — only visible on mobile via CSS */}
-            <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(v => !v)}>
+
+            {/* Mobile hamburger — shown via CSS on mobile only */}
+            <button
+              className="mobile-menu-toggle"
+              onClick={() => setMobileMenuOpen(v => !v)}
+              aria-label="Open menu"
+            >
               {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
 
             {/* Desktop write button */}
-            <button className="btn btn-md btn-blue write-article-btn" onClick={() => navigate('/write')}>
+            <button
+              className="btn btn-md btn-blue write-article-btn"
+              onClick={() => navigate('/write')}
+            >
               <PenLine size={14} /> Write Article
             </button>
 
+            {/* Theme toggle */}
             <button className="theme-toggle" onClick={toggle} title="Toggle theme">
               {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            {/* Desktop profile dropdown — hidden on mobile via CSS */}
+            {/* Desktop profile dropdown */}
             <div className="profile-wrap" ref={profileRef}>
               <button className="user-chip" onClick={() => setProfileOpen(v => !v)}>
                 <div className="user-avi">
-                  <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="avatar" />
+                  <img
+                    src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    alt="avatar"
+                  />
                 </div>
                 <span className="user-nm">{user?.name?.split(' ')[0]}</span>
               </button>
@@ -126,7 +143,10 @@ export const Layout = () => {
                 <div className="profile-dropdown">
                   <div className="profile-dropdown-header">
                     <div className="profile-dropdown-avi">
-                      <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="avatar" />
+                      <img
+                        src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                        alt="avatar"
+                      />
                     </div>
                     <div>
                       <div className="profile-dropdown-name">{user?.name}</div>
@@ -134,7 +154,6 @@ export const Layout = () => {
                     </div>
                   </div>
                   <div className="profile-dropdown-divider" />
-                  {/* ← Removed My Blogs here — already in nav tabs */}
                   <button className="profile-dropdown-item danger" onClick={handleLogout}>
                     <LogOut size={14} /> Sign out
                   </button>
@@ -145,17 +164,20 @@ export const Layout = () => {
         </div>
       </header>
 
-      {/* ─── MOBILE SLIDE DRAWER ─── */}
+      {/* ─── MOBILE DRAWER ─── */}
       {mobileMenuOpen && (
         <div className="mobile-menu-drawer">
           <div className="mobile-menu-backdrop" onClick={() => setMobileMenuOpen(false)} />
           <div className="mobile-menu-panel">
 
-            {/* User info at top */}
+            {/* Header — user info */}
             <div className="mobile-menu-header">
               <div className="mobile-menu-user">
                 <div className="mobile-menu-avi">
-                  <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="avatar" />
+                  <img
+                    src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    alt="avatar"
+                  />
                 </div>
                 <div>
                   <div className="mobile-menu-title">{user?.name}</div>
@@ -167,34 +189,35 @@ export const Layout = () => {
               </button>
             </div>
 
-            {/* Nav links */}
+            {/* Nav items */}
             <div className="mobile-menu-list">
               <button
                 className={`mobile-menu-item${isHome || isDetail ? ' active' : ''}`}
-                onClick={() => handleNavigate('/')}
+                onClick={() => go('/')}
               >
                 <LayoutGrid size={16} /> All Articles
               </button>
               <button
                 className={`mobile-menu-item${isMyBlogs ? ' active' : ''}`}
-                onClick={() => handleNavigate('/my-blogs')}
+                onClick={() => go('/my-blogs')}
               >
                 <BookOpen size={16} /> My Blogs
               </button>
               <button
                 className={`mobile-menu-item${isWrite ? ' active' : ''}`}
-                onClick={() => handleNavigate('/write')}
+                onClick={() => go('/write')}
               >
                 <PenLine size={16} /> Write Article
               </button>
             </div>
 
-            {/* Sign out at bottom */}
+            {/* Sign out — pinned at bottom */}
             <div className="mobile-menu-footer">
               <button className="mobile-menu-item danger" onClick={handleLogout}>
                 <LogOut size={16} /> Sign Out
               </button>
             </div>
+
           </div>
         </div>
       )}
@@ -215,7 +238,11 @@ export const Layout = () => {
         </button>
 
         <div className="mobile-tab-write">
-          <button className="mobile-write-fab" onClick={() => navigate('/write')} title="Write">
+          <button
+            className="mobile-write-fab"
+            onClick={() => navigate('/write')}
+            title="Write Article"
+          >
             <PenLine size={18} />
           </button>
         </div>
@@ -229,7 +256,7 @@ export const Layout = () => {
         </button>
       </nav>
 
-      {/* ─── FOOTER ─── */}
+      {/* ─── FOOTER — desktop only ─── */}
       {!isDetail && (
         <footer className="site-footer">
           <div className="footer-inner">
