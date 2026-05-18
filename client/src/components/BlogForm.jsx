@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useCreateBlog } from '../hooks/useBlogs';
 import { useAuth } from '../AuthContext';
 import { Plus, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { blogApi } from '../api/blogApi.js';
 
 export const BlogForm = ({ onSuccess }) => {
   const { user } = useAuth();
@@ -11,8 +11,7 @@ export const BlogForm = ({ onSuccess }) => {
   const [description, setDescription] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [content, setContent] = useState('');
-
-  const { mutate, isPending } = useCreateBlog();
+  const [isPending, setIsPending] = useState(false);
 
   const reset = () => {
     setTitle('');
@@ -22,11 +21,12 @@ export const BlogForm = ({ onSuccess }) => {
     setContent('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsPending(true);
 
-    mutate(
-      {
+    try {
+      await blogApi.createBlog({
         title,
         category: categories
           .split(',')
@@ -40,130 +40,128 @@ export const BlogForm = ({ onSuccess }) => {
           name: user.name,
           email: user.email,
         },
-      },
-      {
-        onSuccess: () => {
-          reset();
-          if (onSuccess) onSuccess();
-          toast.custom(
-            () => (
+      });
+
+      reset();
+      if (onSuccess) onSuccess();
+      toast.custom(
+        () => (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '14px',
+              padding: '16px 18px',
+              borderRadius: '14px',
+              border: '1.5px solid var(--border)',
+              background: 'var(--surface)',
+              boxShadow: 'var(--shadow-lg)',
+              maxWidth: '420px',
+              width: '100%',
+            }}
+          >
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'rgba(5,150,105,0.1)',
+                color: 'var(--accent-green)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                flexShrink: 0,
+              }}
+            >
+              ✓
+            </div>
+            <div style={{ flex: 1 }}>
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '14px',
-                  padding: '16px 18px',
-                  borderRadius: '14px',
-                  border: '1.5px solid var(--border)',
-                  background: 'var(--surface)',
-                  boxShadow: 'var(--shadow-lg)',
-                  maxWidth: '420px',
-                  width: '100%',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  color: 'var(--text)',
+                  marginBottom: '2px',
                 }}
               >
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    background: 'rgba(5,150,105,0.1)',
-                    color: 'var(--accent-green)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '18px',
-                    flexShrink: 0,
-                  }}
-                >
-                  ✓
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div
-                    style={{
-                      fontSize: '13px',
-                      fontWeight: '700',
-                      color: 'var(--text)',
-                      marginBottom: '2px',
-                    }}
-                  >
-                    Article published successfully!
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      color: 'var(--text-muted)',
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    Your article is now live and visible to all BlogHub readers.
-                  </div>
-                </div>
+                Article published successfully!
               </div>
-            ),
-            { duration: 4000, position: 'bottom-center' }
-          );
-        },
-        onError: () => {
-          toast.custom(
-            () => (
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '14px',
-                  padding: '16px 18px',
-                  borderRadius: '14px',
-                  border: '1.5px solid rgba(220,38,38,0.3)',
-                  background: 'var(--surface)',
-                  boxShadow: 'var(--shadow-lg)',
-                  maxWidth: '420px',
-                  width: '100%',
+                  fontSize: '12px',
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.5,
                 }}
               >
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    background: 'rgba(220,38,38,0.1)',
-                    color: 'var(--accent-red)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '18px',
-                    flexShrink: 0,
-                  }}
-                >
-                  ✕
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div
-                    style={{
-                      fontSize: '13px',
-                      fontWeight: '700',
-                      color: 'var(--text)',
-                      marginBottom: '2px',
-                    }}
-                  >
-                    Could not publish article
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      color: 'var(--text-muted)',
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    Something went wrong. Please check your connection and try again.
-                  </div>
-                </div>
+                Your article is now live and visible to all BlogHub readers.
               </div>
-            ),
-            { duration: 4000, position: 'bottom-center' }
-          );
-        },
-      }
-    );
+            </div>
+          </div>
+        ),
+        { duration: 4000, position: 'bottom-center' }
+      );
+    } catch {
+      toast.custom(
+        () => (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '14px',
+              padding: '16px 18px',
+              borderRadius: '14px',
+              border: '1.5px solid rgba(220,38,38,0.3)',
+              background: 'var(--surface)',
+              boxShadow: 'var(--shadow-lg)',
+              maxWidth: '420px',
+              width: '100%',
+            }}
+          >
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'rgba(220,38,38,0.1)',
+                color: 'var(--accent-red)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                flexShrink: 0,
+              }}
+            >
+              ✕
+            </div>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  color: 'var(--text)',
+                  marginBottom: '2px',
+                }}
+              >
+                Could not publish article
+              </div>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.5,
+                }}
+              >
+                Something went wrong. Please check your connection and try again.
+              </div>
+            </div>
+          </div>
+        ),
+        { duration: 4000, position: 'bottom-center' }
+      );
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const contentOk = content.length >= 300;

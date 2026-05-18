@@ -1,10 +1,8 @@
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { Calendar, Clock, Bookmark, Share2, Heart, MessageCircle, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../AuthContext.jsx';
 import { blogApi } from '../api/blogApi.js';
-import { blogKeys } from '../hooks/useBlogs';
 
 const fmt = (d) =>
   new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -37,49 +35,38 @@ const RichContent = ({ content }) => {
 
 export const BlogDetail = ({ blog }) => {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [commentText, setCommentText] = useState('');
   const [showCommentForm, setShowCommentForm] = useState(false);
+  const [liveBlog, setLiveBlog] = useState(blog);
 
-  const invalidateBlog = () => {
-    queryClient.invalidateQueries({ queryKey: blogKeys.detail(blog._id) });
-    queryClient.invalidateQueries({ queryKey: blogKeys.lists() });
+  useEffect(() => {
+    setLiveBlog(blog);
+  }, [blog]);
+
+  const handleLike = async () => {
+    try {
+      const updated = await blogApi.likeBlog(blog._id);
+      setLiveBlog(updated);
+      toast.success('Liked!');
+    } catch (error) {
+      toast.error('Like failed');
+    }
   };
 
-  const likeMutation = useMutation(() => blogApi.likeBlog(blog._id), {
-    onSuccess: () => {
-      invalidateBlog();
-      toast.success('Liked!');
-    },
-  });
-
-  const shareMutation = useMutation(() => blogApi.shareBlog(blog._id), {
-    onSuccess: () => {
-      invalidateBlog();
-    },
-  });
-
-  const saveMutation = useMutation(() => blogApi.saveBlog(blog._id), {
-    onSuccess: () => {
-      invalidateBlog();
+  const handleSave = async () => {
+    try {
+      const updated = await blogApi.saveBlog(blog._id);
+      setLiveBlog(updated);
       toast.success('Saved!');
-    },
-  });
-
-  const commentMutation = useMutation((text) =>
-    blogApi.commentBlog(blog._id, { text, authorName: user?.name })
-  , {
-    onSuccess: () => {
-      invalidateBlog();
-      setCommentText('');
-      setShowCommentForm(false);
-      toast.success('Comment posted');
-    },
-  });
+    } catch (error) {
+      toast.error('Save failed');
+    }
+  };
 
   const handleShare = async () => {
     try {
-      await shareMutation.mutateAsync();
+      const updated = await blogApi.shareBlog(blog._id);
+      setLiveBlog(updated);
       if (navigator.share) {
         await navigator.share({
           title: blog.title,
@@ -95,57 +82,69 @@ export const BlogDetail = ({ blog }) => {
     }
   };
 
-  const handleCommentSubmit = (event) => {
+  const handleCommentSubmit = async (event) => {
     event.preventDefault();
     if (!commentText.trim()) {
       return toast.error('Write something before posting');
     }
-    commentMutation.mutate(commentText.trim());
+
+    try {
+      const updated = await blogApi.commentBlog(blog._id, {
+        text: commentText.trim(),
+        authorName: user?.name,
+      });
+      setLiveBlog(updated);
+      setCommentText('');
+      setShowCommentForm(false);
+      toast.success('Comment posted');
+    } catch (error) {
+      toast.error('Comment failed');
+    }
   };
 
   return (
     <article className="detail-wrap fade-up">
-      <img src={blog.coverImage} alt={blog.title} className="detail-cover" />
+      <img src={liveBlog.coverImage} alt={liveBlog.title} className="detail-cover" />
 
       <div className="detail-cats">
-        {blog.category.map((c) => <span key={c} className="cat-chip">{c}</span>)}
+        {liveBlog.category.map((c) => <span key={c} className="cat-chip">{c}</span>)}
       </div>
 
-      <h1 className="detail-title">{blog.title}</h1>
+      <h1 className="detail-title">{liveBlog.title}</h1>
 
       <div className="detail-meta">
         <div className="detail-meta-item">
           <Calendar size={13} />
-          <span>{fmt(blog.date)}</span>
+          <span>{fmt(liveBlog.date)}</span>
         </div>
         <div className="detail-meta-item">
           <Clock size={13} />
-          <span>{readTime(blog.content)}</span>
+          <span>{readTime(liveBlog.content)}</span>
         </div>
-        {blog.author?.name && (
-          <div className="detail-meta-item" style={{ fontWeight: 500, cursor: 'pointer', color: 'var(--blue)' }} onClick={() => window.location.href = `/author/${encodeURIComponent(blog.author.email)}`}>
-            <span>by {blog.author.name}</span>
+        {liveBlog.author?.name && (
+          <div className="detail-meta-item" style={{ fontWeight: 500, cursor: 'pointer', color: 'var(--blue)' }} onClick={() => window.location.href = `/author/${encodeURIComponent(liveBlog.author.email)}`}>
+            <span>by {liveBlog.author.name}</span>
           </div>
         )}
         <div className="detail-action-row">
-          <button className="detail-btn heart" onClick={() => likeMutation.mutate()} disabled={likeMutation.isLoading}>
-            <Heart size={13} /> {blog.likes ?? 0}
+          <button className="detail-btn heart" onClick={handleLike}>
+            <Heart size={13} /> {liveBlog.likes ?? 0}
           </button>
           <button className="detail-btn" onClick={() => setShowCommentForm((value) => !value)}>
-            <MessageCircle size={13} /> {blog.comments?.length ?? 0}
+            <MessageCircle size={13} /> {liveBlog.comments?.length ?? 0}
           </button>
-          <button className="detail-btn save" onClick={() => saveMutation.mutate()} disabled={saveMutation.isLoading}>
-            <Bookmark size={13} /> {blog.saves ?? 0}
+          <button className="detail-btn save" onClick={handleSave}>
+            <Bookmark size={13} /> {liveBlog.saves ?? 0}
           </button>
-          <button className="detail-btn" onClick={handleShare} disabled={shareMutation.isLoading}>
-            <Share2 size={13} /> {blog.shares ?? 0}
+          <button className="detail-btn" onClick={handleShare}>
+            <Share2 size={13} /> {liveBlog.shares ?? 0}
           </button>
         </div>
       </div>
 
-      <blockquote className="detail-lede">{blog.description}</blockquote>
+      <blockquote className="detail-lede">{liveBlog.description}</blockquote>
 
-      <RichContent content={blog.content} />
+      <RichContent content={liveBlog.content} />
 
       {showCommentForm && (
         <section className="detail-comments-panel">
@@ -156,17 +155,17 @@ export const BlogDetail = ({ blog }) => {
               placeholder="Share your thoughts on this article"
               rows={4}
             />
-            <button type="submit" className="detail-btn save" disabled={commentMutation.isLoading}>
+            <button type="submit" className="detail-btn save">
               Post comment
             </button>
           </form>
         </section>
       )}
 
-      {blog.comments?.length > 0 && (
+      {liveBlog.comments?.length > 0 && (
         <section className="detail-comments">
           <h3>Comments</h3>
-          {blog.comments.slice().reverse().map((item, index) => (
+          {liveBlog.comments.slice().reverse().map((item, index) => (
             <div key={index} className="comment-card">
               <div className="comment-card-header">
                 <strong>{item.author?.name || 'Guest'}</strong>
@@ -181,7 +180,7 @@ export const BlogDetail = ({ blog }) => {
       <div className="detail-tags">
         <div className="detail-tags-lbl">Topics</div>
         <div>
-          {blog.category.map((c) => (
+          {liveBlog.category.map((c) => (
             <span key={c} className="tag-pill">#{c.toLowerCase()}</span>
           ))}
         </div>
