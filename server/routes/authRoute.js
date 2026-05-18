@@ -34,6 +34,77 @@ router.get('/blogs/:id', async (req, res) => {
   return res.json(blog);
 });
 
+const getUserFromToken = (token) => {
+  if (!token) return null;
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    return null;
+  }
+};
+
+router.patch('/blogs/:id/like', async (req, res) => {
+  const blog = await Blog.findByIdAndUpdate(
+    req.params.id,
+    { $inc: { likes: 1 } },
+    { new: true }
+  );
+  if (!blog) return res.status(404).json({ message: 'Blog not found' });
+  return res.json(blog);
+});
+
+router.patch('/blogs/:id/share', async (req, res) => {
+  const blog = await Blog.findByIdAndUpdate(
+    req.params.id,
+    { $inc: { shares: 1 } },
+    { new: true }
+  );
+  if (!blog) return res.status(404).json({ message: 'Blog not found' });
+  return res.json(blog);
+});
+
+router.patch('/blogs/:id/save', async (req, res) => {
+  const user = getUserFromToken(req.cookies.token);
+  const blog = await Blog.findById(req.params.id);
+  if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+  if (user?.email) {
+    if (!blog.savedBy.includes(user.email)) {
+      blog.savedBy.push(user.email);
+      blog.saves = blog.savedBy.length;
+      await blog.save();
+    }
+    return res.json(blog);
+  }
+
+  const updated = await Blog.findByIdAndUpdate(
+    req.params.id,
+    { $inc: { saves: 1 } },
+    { new: true }
+  );
+  return res.json(updated);
+});
+
+router.patch('/blogs/:id/comment', async (req, res) => {
+  const { text, authorName } = req.body;
+  if (!text || !text.trim()) {
+    return res.status(400).json({ message: 'Comment text is required' });
+  }
+
+  const user = getUserFromToken(req.cookies.token);
+  const author = {
+    name: authorName || user?.name || 'Guest',
+    email: user?.email,
+  };
+
+  const blog = await Blog.findById(req.params.id);
+  if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+  blog.comments.push({ author, text: text.trim() });
+  await blog.save();
+  return res.json(blog);
+});
+
 // Create blog
 router.post('/blogs', async (req, res) => {
   const blog = await Blog.create(req.body);
