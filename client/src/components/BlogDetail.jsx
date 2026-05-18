@@ -107,7 +107,7 @@ export const BlogDetail = ({ blog }) => {
       <img src={liveBlog.coverImage} alt={liveBlog.title} className="detail-cover" />
 
       <div className="detail-cats">
-        {liveBlog.category.map((c) => <span key={c} className="cat-chip">{c}</span>)}
+        {liveBlog.category?.map((c) => <span key={c} className="cat-chip">{c}</span>)}
       </div>
 
       <h1 className="detail-title">{liveBlog.title}</h1>
@@ -121,11 +121,9 @@ export const BlogDetail = ({ blog }) => {
           <Clock size={13} />
           <span>{readTime(liveBlog.content)}</span>
         </div>
-        {liveBlog.author?.name && (
-          <div className="detail-meta-item" style={{ fontWeight: 500, cursor: 'pointer', color: 'var(--blue)' }} onClick={() => window.location.href = `/author/${encodeURIComponent(liveBlog.author.email)}`}>
-            <span>by {liveBlog.author.name}</span>
-          </div>
-        )}
+        <div className="detail-meta-item" style={{ fontWeight: 500, cursor: liveBlog.author?.email ? 'pointer' : 'default', color: 'var(--blue)' }} onClick={() => liveBlog.author?.email && (window.location.href = `/author/${encodeURIComponent(liveBlog.author.email)}`)}>
+          <span>by {liveBlog.author?.name || 'BlogHub Author'}</span>
+        </div>
         <div className="detail-action-row">
           <button className="detail-btn heart" onClick={handleLike}>
             <Heart size={13} /> {liveBlog.likes ?? 0}
@@ -180,7 +178,7 @@ export const BlogDetail = ({ blog }) => {
       <div className="detail-tags">
         <div className="detail-tags-lbl">Topics</div>
         <div>
-          {liveBlog.category.map((c) => (
+          {liveBlog.category?.map((c) => (
             <span key={c} className="tag-pill">#{c.toLowerCase()}</span>
           ))}
         </div>

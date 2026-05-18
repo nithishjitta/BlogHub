@@ -12,6 +12,7 @@ const blogSchema = new mongoose.Schema({
     email: { type: String }, // ← used to fetch user's blogs
   },
   likes: { type: Number, default: 0 },
+  likedBy: { type: [String], default: [] },
   shares: { type: Number, default: 0 },
   saves: { type: Number, default: 0 },
   savedBy: { type: [String], default: [] },

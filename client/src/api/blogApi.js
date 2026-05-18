@@ -44,6 +44,11 @@ export const blogApi = {
     return response.data;
   },
 
+  getSavedBlogs: async () => {
+    const response = await api.get('/blogs/saved');
+    return response.data;
+  },
+
   commentBlog: async (id, payload) => {
     const response = await api.patch(`/blogs/${id}/comment`, payload);
     return response.data;

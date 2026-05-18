@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMyBlogs } from '../hooks/useBlogs'; // ← dedicated hook
+import { useMyBlogs, useSavedBlogs } from '../hooks/useBlogs';
 import { useAuth } from '../AuthContext';
 import { Calendar, Clock, FileText, TrendingUp, PenLine, Eye } from 'lucide-react';
 
@@ -11,14 +11,18 @@ const readTime = (content) =>
 
 export const MyBlogs = ({ onOpen }) => {
   const { user } = useAuth();
-  const { data: myBlogs = [], isLoading } = useMyBlogs(user?.email); // ← fetch by email
+  const { data: myBlogs = [], isLoading: myLoading } = useMyBlogs(user?.email);
+  const { data: savedBlogs = [], isLoading: savedLoading } = useSavedBlogs(!!user?.email);
+  const [view, setView] = useState('published');
   const [filter, setFilter] = useState('all');
 
-  const allCats = [...new Set(myBlogs.flatMap((b) => b.category || []))];
+  const activeBlogs = view === 'saved' ? savedBlogs : myBlogs;
+  const isLoading = view === 'saved' ? savedLoading : myLoading;
+  const allCats = [...new Set(activeBlogs.flatMap((b) => b.category || []))];
 
   const filtered = filter === 'all'
-    ? myBlogs
-    : myBlogs.filter((b) => b.category?.includes(filter));
+    ? activeBlogs
+    : activeBlogs.filter((b) => b.category?.includes(filter));
 
   if (isLoading) {
     return (
@@ -37,8 +41,8 @@ export const MyBlogs = ({ onOpen }) => {
             <div className="hero-eyebrow-pip" />
             <span className="hero-eyebrow-text">My Articles</span>
           </div>
-          <h2 className="myblogs-title">Your Published Work</h2>
-          <p className="myblogs-sub">Articles you've contributed to the BlogHub community.</p>
+          <h2 className="myblogs-title">{view === 'saved' ? 'Saved Articles' : 'Your Published Work'}</h2>
+          <p className="myblogs-sub">{view === 'saved' ? 'Articles you saved for later.' : 'Articles you\'ve contributed to the BlogHub community.'}</p>
         </div>
 
         <div className="myblogs-stats">
@@ -47,7 +51,7 @@ export const MyBlogs = ({ onOpen }) => {
               <FileText size={16} />
             </div>
             <div>
-              <div className="myblogs-stat-n">{myBlogs.length}</div>
+              <div className="myblogs-stat-n">{activeBlogs.length}</div>
               <div className="myblogs-stat-l">Articles</div>
             </div>
           </div>
@@ -66,7 +70,7 @@ export const MyBlogs = ({ onOpen }) => {
             </div>
             <div>
               <div className="myblogs-stat-n">
-                {myBlogs.reduce((acc, b) => acc + Math.ceil((b.content || '').split(' ').length / 200), 0)}
+                {activeBlogs.reduce((acc, b) => acc + Math.ceil((b.content || '').split(' ').length / 200), 0)}
               </div>
               <div className="myblogs-stat-l">Min of Content</div>
             </div>
@@ -74,25 +78,35 @@ export const MyBlogs = ({ onOpen }) => {
         </div>
       </div>
 
-      {myBlogs.length === 0 && (
+      {activeBlogs.length === 0 && !isLoading && (
         <div className="myblogs-empty">
           <div className="myblogs-empty-icon"><PenLine size={32} /></div>
-          <h3 className="myblogs-empty-title">No articles yet</h3>
+          <h3 className="myblogs-empty-title">{view === 'saved' ? 'No saved articles yet' : 'No articles yet'}</h3>
           <p className="myblogs-empty-sub">
-            You haven't published any articles. Click "Write Article" to get started.
+            {view === 'saved'
+              ? 'Save articles from the blog detail page to find them here later.'
+              : 'You haven\'t published any articles. Click "Write Article" to get started.'}
           </p>
         </div>
       )}
 
-      {myBlogs.length > 0 && (
+      {activeBlogs.length > 0 && (
         <>
+          <div className="myblogs-view-switch">
+            <button className={`myblogs-filter-btn${view === 'published' ? ' active' : ''}`} onClick={() => { setView('published'); setFilter('all'); }}>
+              Published
+            </button>
+            <button className={`myblogs-filter-btn${view === 'saved' ? ' active' : ''}`} onClick={() => { setView('saved'); setFilter('all'); }}>
+              Saved
+            </button>
+          </div>
           <div className="myblogs-filters">
             <button className={`myblogs-filter-btn${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>
-              All ({myBlogs.length})
+              All ({activeBlogs.length})
             </button>
             {allCats.map((cat) => (
               <button key={cat} className={`myblogs-filter-btn${filter === cat ? ' active' : ''}`} onClick={() => setFilter(cat)}>
-                {cat} ({myBlogs.filter((b) => b.category?.includes(cat)).length})
+                {cat} ({activeBlogs.filter((b) => b.category?.includes(cat)).length})
               </button>
             ))}
           </div>

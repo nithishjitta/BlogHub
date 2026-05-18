@@ -8,6 +8,7 @@ export const blogKeys = {
   details: () => [...blogKeys.all, 'detail'],
   detail: (id) => [...blogKeys.details(), id],
   user: (email) => [...blogKeys.all, 'user', email],
+  saved: () => [...blogKeys.all, 'saved'],
 };
 
 export function useBlogs() {
@@ -31,6 +32,14 @@ export function useMyBlogs(email) {
     queryKey: blogKeys.user(email),
     queryFn: () => blogApi.getBlogsByUser(email),
     enabled: !!email,
+  });
+}
+
+export function useSavedBlogs(enabled = true) {
+  return useQuery({
+    queryKey: blogKeys.saved(),
+    queryFn: blogApi.getSavedBlogs,
+    enabled,
   });
 }
 
